@@ -1,17 +1,15 @@
-version: "3"
-
-services:
-  app:
-    image: powerdnsadmin/pda-legacy:latest
-    container_name: powerdns_admin
+service:
+  pdns:
+    image: bosdaring/pdns-admin:latest
+    container_name: pdns
+    restart: unless-stopped
+    volumes:
+      - ./pdns:/data
     ports:
-      - "9191:80"
-    logging:
-      driver: json-file
-      options:
-        max-size: 50m
+      - 53:53/tcp
+      - 53:53/udp
+      - 8080:80/tcp #powerdns-admin interface
+      - 8081:8081/tcp #optional expose pdns API 
     environment:
-      - SQLALCHEMY_DATABASE_URI=mysql://pda:changeme@host.docker.internal/pda
-      - GUNICORN_TIMEOUT=60
-      - GUNICORN_WORKERS=2
-      - GUNICORN_LOGLEVEL=DEBUG
+      - USER=pdns
+      - SECRET_KEY='changeme'
